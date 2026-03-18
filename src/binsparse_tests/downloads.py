@@ -44,6 +44,9 @@ def extract_matrix_market_file(
 ) -> Path:
     destination_dir.mkdir(parents=True, exist_ok=True)
     with tarfile.open(archive_path, "r:gz") as archive:
-        archive.extract(fixture.matrix_market.archive_member, path=destination_dir)
+        archive.extract(
+            fixture.matrix_market.archive_member,
+            path=destination_dir,
+            filter="data",
+        )
     return destination_dir / fixture.matrix_market.archive_member
-
