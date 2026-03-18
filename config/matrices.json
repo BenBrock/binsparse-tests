@@ -1,0 +1,28 @@
+{
+  "source_base_url": "https://benjaminbrock.net/binsparse-test-matrices/",
+  "matrices": [
+    {
+      "name": "IMDB",
+      "matrix_market": {
+        "url": "https://benjaminbrock.net/binsparse-test-matrices/IMDB.tar.gz",
+        "archive_member": "IMDB/IMDB.mtx"
+      },
+      "binsparse": {
+        "url": "https://benjaminbrock.net/binsparse-test-matrices/IMDB.coo.bsp.h5",
+        "dataset": null
+      }
+    },
+    {
+      "name": "chesapeake",
+      "matrix_market": {
+        "url": "https://benjaminbrock.net/binsparse-test-matrices/chesapeake.tar.gz",
+        "archive_member": "chesapeake/chesapeake.mtx"
+      },
+      "binsparse": {
+        "url": "https://benjaminbrock.net/binsparse-test-matrices/chesapeake.coo.bsp.h5",
+        "dataset": null
+      }
+    }
+  ]
+}
+

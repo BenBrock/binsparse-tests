@@ -1,0 +1,13 @@
+{
+  "parsers": [
+    {
+      "name": "reference-c",
+      "binaries": {
+        "mtx2bsp": "/abs/path/to/mtx2bsp",
+        "bsp2mtx": "/abs/path/to/bsp2mtx",
+        "check_equivalence": "/abs/path/to/check_equivalence"
+      }
+    }
+  ]
+}
+
