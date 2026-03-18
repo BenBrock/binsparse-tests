@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-exec /home/ubuntu/.juliaup/bin/julia --project=/home/ubuntu/Finch.jl /home/ubuntu/binsparse-tests/tools/finch/finch_cli.jl check_equivalence "$@"

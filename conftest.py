@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from binsparse_tests.config import discover_binsparse_fixtures
 from binsparse_tests.config import load_matrix_manifest
 from binsparse_tests.config import load_parser_manifest
 
@@ -13,7 +14,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--matrix-manifest",
         action="store",
         default="config/matrices.json",
-        help="Path to the matrix manifest JSON file.",
+        help="Path to the matrix manifest JSON file. Pass '-' to disable it.",
     )
     parser.addoption(
         "--parser-config",
@@ -33,19 +34,109 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         help="Directory for downloaded matrix artifacts.",
     )
+    parser.addoption(
+        "--binsparse-root",
+        action="store",
+        default=None,
+        help="Discover local binsparse fixtures under this directory.",
+    )
+
+
+def _load_requested_fixtures(pytestconfig: pytest.Config) -> list:
+    fixtures = []
+
+    manifest_arg = pytestconfig.getoption("--matrix-manifest")
+    if manifest_arg not in (None, "", "-", "none"):
+        manifest_path = Path(manifest_arg)
+        if not manifest_path.exists():
+            raise pytest.UsageError(f"matrix manifest not found: {manifest_path}")
+        fixtures.extend(load_matrix_manifest(manifest_path))
+
+    binsparse_root_arg = pytestconfig.getoption("--binsparse-root")
+    if binsparse_root_arg:
+        binsparse_root = Path(binsparse_root_arg)
+        if not binsparse_root.is_dir():
+            raise pytest.UsageError(
+                f"binsparse root is not a directory: {binsparse_root}"
+            )
+        fixtures.extend(discover_binsparse_fixtures(binsparse_root))
+
+    if not fixtures:
+        raise pytest.UsageError(
+            "no matrix fixtures were found; provide --matrix-manifest and/or "
+            "--binsparse-root"
+        )
+
+    return fixtures
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    if "matrix_fixture" not in metafunc.fixturenames:
+    fixtures = None
+
+    if "matrix_fixture" in metafunc.fixturenames:
+        fixtures = fixtures or _load_requested_fixtures(metafunc.config)
+        metafunc.parametrize(
+            "matrix_fixture",
+            fixtures,
+            indirect=True,
+            ids=[fixture.name for fixture in fixtures],
+        )
+
+    if "paired_matrix_fixture" in metafunc.fixturenames:
+        fixtures = fixtures or _load_requested_fixtures(metafunc.config)
+        paired_fixtures = [
+            fixture for fixture in fixtures if fixture.matrix_market is not None
+        ]
+        metafunc.parametrize(
+            "paired_matrix_fixture",
+            paired_fixtures,
+            indirect=True,
+            ids=[fixture.name for fixture in paired_fixtures],
+        )
+
+    if "binsparse_fixture" in metafunc.fixturenames:
+        fixtures = fixtures or _load_requested_fixtures(metafunc.config)
+        metafunc.parametrize(
+            "binsparse_fixture",
+            fixtures,
+            indirect=True,
+            ids=[fixture.name for fixture in fixtures],
+        )
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    fixtures = _load_requested_fixtures(config)
+    if any(fixture.matrix_market is not None for fixture in fixtures):
         return
 
-    manifest_path = Path(metafunc.config.getoption("--matrix-manifest"))
-    fixtures = load_matrix_manifest(manifest_path)
-    metafunc.parametrize(
-        "matrix_fixture",
-        fixtures,
-        ids=[fixture.name for fixture in fixtures],
-    )
+    retained = []
+    deselected = []
+    for item in items:
+        if "paired_matrix_fixture" in getattr(item, "fixturenames", ()):
+            deselected.append(item)
+            continue
+        retained.append(item)
+
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
+        items[:] = retained
+
+
+@pytest.fixture
+def matrix_fixture(request: pytest.FixtureRequest):
+    return request.param
+
+
+@pytest.fixture
+def paired_matrix_fixture(request: pytest.FixtureRequest):
+    return request.param
+
+
+@pytest.fixture
+def binsparse_fixture(request: pytest.FixtureRequest):
+    return request.param
 
 
 @pytest.fixture(scope="session")
@@ -97,4 +188,3 @@ def active_parser(pytestconfig: pytest.Config):
         pytest.skip(f"parser binaries do not exist: {joined}")
 
     return parser
-

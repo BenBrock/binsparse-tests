@@ -19,9 +19,12 @@ The initial scaffold covers:
   [config/matrices.json](/home/ubuntu/binsparse-tests/config/matrices.json).
 - A parser config contract in
   [config/parsers.example.json](/home/ubuntu/binsparse-tests/config/parsers.example.json).
-- Roundtrip test orchestration for both entry points:
+- Roundtrip test orchestration for both entry points when both fixture formats
+  are available:
   - Matrix Market -> Binsparse -> Matrix Market
   - Binsparse -> Matrix Market -> Binsparse
+- Binsparse-only fixture discovery from a local directory tree, which collects
+  just the Binsparse -> Matrix Market -> Binsparse roundtrip.
 
 ## Install
 
@@ -59,6 +62,24 @@ Example:
 }
 ```
 
+Fixture manifests may also use local paths. `matrix_market` is optional, so a
+fixture can be Binsparse-only:
+
+```json
+{
+  "matrices": [
+    {
+      "name": "AG-Monien/3elt",
+      "matrix_market": null,
+      "binsparse": {
+        "path": "/binsparse-data/data/SuiteSparse_coo_noz_primary/AG-Monien/3elt.coo.bsp.h5",
+        "dataset": null
+      }
+    }
+  ]
+}
+```
+
 ## Run
 
 ```bash
@@ -69,23 +90,26 @@ pytest -q \
 
 By default, fixture downloads are cached under `.pytest_cache/binsparse-tests`.
 
-## Finch Adapter
+To run local Binsparse-only fixtures without the default manifest:
 
-There is also a local Finch adapter under
-[tools/finch](/home/ubuntu/binsparse-tests/tools/finch). It exposes the
-required `mtx2bsp`, `bsp2mtx`, and `check_equivalence` binaries expected by the
-harness.
+```bash
+pytest -q \
+  --matrix-manifest - \
+  --binsparse-root /binsparse-data/data/SuiteSparse_coo_noz_primary \
+  --parser-config config/parsers.local.json \
+  --parser reference-c
+```
 
-This adapter currently works around several upstream Finch gaps:
+With this mode, fixtures discovered under `--binsparse-root` only run the
+`bsp2mtx -> mtx2bsp` roundtrip. Fixtures that also define `matrix_market`
+continue to run both directions.
 
-- Finch's normal `.mtx` path rejects symmetric Matrix Market files because it
-  routes through `TensorMarket.jl`.
-- Finch's current `.bsp.h5` reader does not handle `iso[...]` value encoding.
-- Finch's current `.bsp.h5` reader does not handle binsparse `structure`
-  metadata such as `symmetric_lower`.
+For Finch, point `config/parsers.local.json` at the upstream commands in your
+local [Finch.jl](/docker-mount/Finch.jl) checkout:
 
-The local adapter uses Julia packages plus Finch's project environment to
-provide a working parser target for the current test fixtures.
+- [mtx2bsp](/docker-mount/Finch.jl/bin/mtx2bsp)
+- [bsp2mtx](/docker-mount/Finch.jl/bin/bsp2mtx)
+- [check_equivalence](/docker-mount/Finch.jl/bin/check_equivalence)
 
 ## Design Notes
 

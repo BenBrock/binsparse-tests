@@ -11,9 +11,12 @@ the following binaries:
 
 ## Test Contract
 
-For each matrix fixture, run two independent roundtrips.
+For each matrix fixture, run the roundtrips supported by the available source
+artifacts.
 
 ### 1. Start from Matrix Market
+
+Only for fixtures that define a Matrix Market source.
 
 1. `mtx2bsp source.mtx generated.bsp.h5`
 2. `check_equivalence source.mtx generated.bsp.h5`
@@ -26,6 +29,8 @@ For each matrix fixture, run two independent roundtrips.
 2. `check_equivalence source.bsp.h5 generated.mtx`
 3. `mtx2bsp generated.mtx regenerated.bsp.h5`
 4. `check_equivalence source.bsp.h5 regenerated.bsp.h5`
+
+Local binsparse-only fixture trees should collect just this second roundtrip.
 
 ## Why pytest
 
@@ -59,6 +64,7 @@ unnecessary dependencies.
 - add CI once at least one parser can be built in automation
 - integrate Finch and other non-reference parsers
 - expand matrix coverage beyond the two initial fixtures
+- add large local binsparse corpora such as SuiteSparse binsparse-only trees
 
 ## Local Environment Notes
 
@@ -71,4 +77,3 @@ On this machine at planning time, the following were missing:
 
 That means the code scaffold can be written now, but execution and validation
 will require dependency installation before the first real test run.
-
