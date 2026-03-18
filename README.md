@@ -69,6 +69,24 @@ pytest -q \
 
 By default, fixture downloads are cached under `.pytest_cache/binsparse-tests`.
 
+## Finch Adapter
+
+There is also a local Finch adapter under
+[tools/finch](/home/ubuntu/binsparse-tests/tools/finch). It exposes the
+required `mtx2bsp`, `bsp2mtx`, and `check_equivalence` binaries expected by the
+harness.
+
+This adapter currently works around several upstream Finch gaps:
+
+- Finch's normal `.mtx` path rejects symmetric Matrix Market files because it
+  routes through `TensorMarket.jl`.
+- Finch's current `.bsp.h5` reader does not handle `iso[...]` value encoding.
+- Finch's current `.bsp.h5` reader does not handle binsparse `structure`
+  metadata such as `symmetric_lower`.
+
+The local adapter uses Julia packages plus Finch's project environment to
+provide a working parser target for the current test fixtures.
+
 ## Design Notes
 
 The canonical command directions are:
@@ -81,4 +99,3 @@ the prose description of the roundtrip sequence.
 
 See [docs/plan.md](/home/ubuntu/binsparse-tests/docs/plan.md) for the
 implementation plan.
-
