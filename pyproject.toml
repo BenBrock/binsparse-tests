@@ -7,7 +7,10 @@ name = "binsparse-tests"
 version = "0.1.0"
 description = "Pytest-based interoperability tests for Binsparse parsers"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "h5py>=3.10",
+  "numpy>=1.26",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -20,4 +23,3 @@ pythonpath = ["src"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

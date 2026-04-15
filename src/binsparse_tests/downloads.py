@@ -6,6 +6,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from .contracts import CanonicalFixture
+from .contracts import CanonicalReferenceSpec
 from .contracts import MatrixFixture
 
 
@@ -38,14 +40,19 @@ def fetch_matrix_market_file(
     if fixture.matrix_market is None:
         raise ValueError(f"fixture '{fixture.name}' does not define matrix_market")
 
-    spec = fixture.matrix_market
+    return fetch_matrix_market_spec(fixture.matrix_market, cache_dir, destination_dir)
+
+
+def fetch_matrix_market_spec(
+    spec,
+    cache_dir: Path,
+    destination_dir: Path,
+) -> Path:
     if spec.path is not None:
         return _resolve_local_path(spec.path)
 
     if spec.url is None:
-        raise ValueError(
-            f"fixture '{fixture.name}' matrix_market must define either url or path"
-        )
+        raise ValueError("matrix_market spec must define either url or path")
 
     if spec.archive_member is None:
         return _download(spec.url, cache_dir / _filename_from_url(spec.url))
@@ -67,6 +74,37 @@ def fetch_binsparse_file(fixture: MatrixFixture, cache_dir: Path) -> Path:
         fixture.binsparse.url,
         cache_dir / _filename_from_url(fixture.binsparse.url),
     )
+
+
+def fetch_canonical_file(fixture: CanonicalFixture, cache_dir: Path) -> Path:
+    if fixture.canonical.path is not None:
+        return _resolve_local_path(fixture.canonical.path)
+
+    if fixture.canonical.url is None:
+        raise ValueError(
+            f"fixture '{fixture.name}' canonical file must define either url or path"
+        )
+
+    return _download(
+        fixture.canonical.url,
+        cache_dir / _filename_from_url(fixture.canonical.url),
+    )
+
+
+def fetch_reference_file(
+    fixture: CanonicalFixture,
+    reference: CanonicalReferenceSpec,
+    cache_dir: Path,
+) -> Path:
+    if reference.path is not None:
+        return _resolve_local_path(reference.path)
+
+    if reference.url is None:
+        raise ValueError(
+            f"fixture '{fixture.name}' reference '{reference.format}' must define either url or path"
+        )
+
+    return _download(reference.url, cache_dir / _filename_from_url(reference.url))
 
 
 def extract_matrix_market_file(

@@ -1,0 +1,125 @@
+{
+  "source_base_url": "http://sparse-files.engr.tamu.edu/MM/",
+  "matrices": [
+    {
+      "name": "HB/bcspwr01",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/HB/bcspwr01.tar.gz",
+        "archive_member": "bcspwr01/bcspwr01.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/HB/bcspwr01.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/HB/bcspwr01.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/HB/bcspwr01.csc.bsp.h5"
+        }
+      ]
+    },
+    {
+      "name": "Pajek/GD99_b",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/Pajek/GD99_b.tar.gz",
+        "archive_member": "GD99_b/GD99_b.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/Pajek/GD99_b.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/Pajek/GD99_b.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/Pajek/GD99_b.csc.bsp.h5"
+        }
+      ]
+    },
+    {
+      "name": "LPnetlib/lpi_itest2",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/LPnetlib/lpi_itest2.tar.gz",
+        "archive_member": "lpi_itest2/lpi_itest2.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/LPnetlib/lpi_itest2.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/LPnetlib/lpi_itest2.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/LPnetlib/lpi_itest2.csc.bsp.h5"
+        }
+      ]
+    },
+    {
+      "name": "HB/gre_115",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/HB/gre_115.tar.gz",
+        "archive_member": "gre_115/gre_115.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/HB/gre_115.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/HB/gre_115.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/HB/gre_115.csc.bsp.h5"
+        }
+      ]
+    },
+    {
+      "name": "HB/young1c",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/HB/young1c.tar.gz",
+        "archive_member": "young1c/young1c.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/HB/young1c.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/HB/young1c.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/HB/young1c.csc.bsp.h5"
+        }
+      ]
+    },
+    {
+      "name": "Bai/dwg961a",
+      "suite_sparse": {
+        "url": "http://sparse-files.engr.tamu.edu/MM/Bai/dwg961a.tar.gz",
+        "archive_member": "dwg961a/dwg961a.mtx"
+      },
+      "canonical": {
+        "path": "../fixtures/canonical/Bai/dwg961a.canonical.h5"
+      },
+      "references": [
+        {
+          "format": "CSR",
+          "path": "../fixtures/reference/Bai/dwg961a.csr.bsp.h5"
+        },
+        {
+          "format": "CSC",
+          "path": "../fixtures/reference/Bai/dwg961a.csc.bsp.h5"
+        }
+      ]
+    }
+  ]
+}
