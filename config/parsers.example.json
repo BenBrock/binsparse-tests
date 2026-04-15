@@ -5,9 +5,10 @@
       "binaries": {
         "mtx2bsp": "/abs/path/to/mtx2bsp",
         "bsp2mtx": "/abs/path/to/bsp2mtx",
-        "check_equivalence": "/abs/path/to/check_equivalence"
+        "check_equivalence": "/abs/path/to/check_equivalence",
+        "check_canonical_equivalence": "/abs/path/to/check_canonical_equivalence",
+        "canonical2bsp": "/abs/path/to/canonical2bsp"
       }
     }
   ]
 }
-

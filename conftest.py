@@ -5,8 +5,10 @@ from pathlib import Path
 import pytest
 
 from binsparse_tests.config import discover_binsparse_fixtures
+from binsparse_tests.config import load_canonical_manifest
 from binsparse_tests.config import load_matrix_manifest
 from binsparse_tests.config import load_parser_manifest
+from binsparse_tests.contracts import CanonicalReferenceCase
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -40,13 +42,21 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         help="Discover local binsparse fixtures under this directory.",
     )
+    parser.addoption(
+        "--canonical-manifest",
+        action="store",
+        default="config/canonical_matrices.json",
+        help="Path to the canonical HDF5 fixture manifest JSON file. Pass '-' to disable it.",
+    )
 
 
 def _load_requested_fixtures(pytestconfig: pytest.Config) -> list:
     fixtures = []
+    requested_sources = False
 
     manifest_arg = pytestconfig.getoption("--matrix-manifest")
     if manifest_arg not in (None, "", "-", "none"):
+        requested_sources = True
         manifest_path = Path(manifest_arg)
         if not manifest_path.exists():
             raise pytest.UsageError(f"matrix manifest not found: {manifest_path}")
@@ -54,6 +64,7 @@ def _load_requested_fixtures(pytestconfig: pytest.Config) -> list:
 
     binsparse_root_arg = pytestconfig.getoption("--binsparse-root")
     if binsparse_root_arg:
+        requested_sources = True
         binsparse_root = Path(binsparse_root_arg)
         if not binsparse_root.is_dir():
             raise pytest.UsageError(
@@ -62,6 +73,8 @@ def _load_requested_fixtures(pytestconfig: pytest.Config) -> list:
         fixtures.extend(discover_binsparse_fixtures(binsparse_root))
 
     if not fixtures:
+        if not requested_sources:
+            return []
         raise pytest.UsageError(
             "no matrix fixtures were found; provide --matrix-manifest and/or "
             "--binsparse-root"
@@ -70,8 +83,21 @@ def _load_requested_fixtures(pytestconfig: pytest.Config) -> list:
     return fixtures
 
 
+def _load_requested_canonical_fixtures(pytestconfig: pytest.Config) -> list:
+    manifest_arg = pytestconfig.getoption("--canonical-manifest")
+    if manifest_arg in (None, "", "-", "none"):
+        return []
+
+    manifest_path = Path(manifest_arg)
+    if not manifest_path.exists():
+        raise pytest.UsageError(f"canonical manifest not found: {manifest_path}")
+
+    return load_canonical_manifest(manifest_path)
+
+
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     fixtures = None
+    canonical_fixtures = None
 
     if "matrix_fixture" in metafunc.fixturenames:
         fixtures = fixtures or _load_requested_fixtures(metafunc.config)
@@ -103,10 +129,44 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
             ids=[fixture.name for fixture in fixtures],
         )
 
+    if "canonical_fixture" in metafunc.fixturenames:
+        canonical_fixtures = canonical_fixtures or _load_requested_canonical_fixtures(
+            metafunc.config
+        )
+        metafunc.parametrize(
+            "canonical_fixture",
+            canonical_fixtures,
+            indirect=True,
+            ids=[fixture.name for fixture in canonical_fixtures],
+        )
+
+    if "canonical_reference_case" in metafunc.fixturenames:
+        canonical_fixtures = canonical_fixtures or _load_requested_canonical_fixtures(
+            metafunc.config
+        )
+        cases = [
+            CanonicalReferenceCase(fixture=fixture, reference=reference)
+            for fixture in canonical_fixtures
+            for reference in fixture.references
+        ]
+        metafunc.parametrize(
+            "canonical_reference_case",
+            cases,
+            indirect=True,
+            ids=[case.id for case in cases],
+        )
+
 
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
+    if not any(
+        set(getattr(item, "fixturenames", ()))
+        & {"matrix_fixture", "paired_matrix_fixture", "binsparse_fixture"}
+        for item in items
+    ):
+        return
+
     fixtures = _load_requested_fixtures(config)
     if any(fixture.matrix_market is not None for fixture in fixtures):
         return
@@ -136,6 +196,16 @@ def paired_matrix_fixture(request: pytest.FixtureRequest):
 
 @pytest.fixture
 def binsparse_fixture(request: pytest.FixtureRequest):
+    return request.param
+
+
+@pytest.fixture
+def canonical_fixture(request: pytest.FixtureRequest):
+    return request.param
+
+
+@pytest.fixture
+def canonical_reference_case(request: pytest.FixtureRequest):
     return request.param
 
 
