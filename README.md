@@ -19,10 +19,14 @@ The framework is intentionally small:
 
 - [docs/canonical_hdf5.md](/docker-mount/binsparse-tests/docs/canonical_hdf5.md)
   defines the canonical dense-HDF5 fixture contract.
+- [docs/canonical_corpus_summary.md](/docker-mount/binsparse-tests/docs/canonical_corpus_summary.md)
+  summarizes the currently committed canonical matrices and reference files.
 - [docs/parser_contract.md](/docker-mount/binsparse-tests/docs/parser_contract.md)
   defines the parser binary contract.
 - [docs/corpus_maintenance.md](/docker-mount/binsparse-tests/docs/corpus_maintenance.md)
   describes corpus selection and regeneration.
+- [docs/spec_feature_coverage_checklist.md](/docker-mount/binsparse-tests/docs/spec_feature_coverage_checklist.md)
+  tracks which Binsparse features the current committed corpus does and does not cover.
 - [docs/plan.md](/docker-mount/binsparse-tests/docs/plan.md)
   records the original legacy roundtrip plan.
 
