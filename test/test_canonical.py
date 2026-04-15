@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from binsparse_tests.runner import generate_from_canonical_and_compare
-from binsparse_tests.runner import verify_reference_matches_canonical
+from binsparse_tests.canonical_workflows import generate_from_canonical_and_compare
+from binsparse_tests.canonical_workflows import verify_reference_matches_canonical
 
 
 def test_reference_matches_canonical(

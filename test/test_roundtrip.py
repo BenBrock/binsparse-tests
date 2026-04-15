@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from binsparse_tests.runner import roundtrip_from_binsparse
-from binsparse_tests.runner import roundtrip_from_matrix_market
+from binsparse_tests.legacy_workflows import roundtrip_from_binsparse
+from binsparse_tests.legacy_workflows import roundtrip_from_matrix_market
 
 
 def test_roundtrip_from_matrix_market(

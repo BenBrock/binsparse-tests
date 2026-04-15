@@ -5,10 +5,10 @@ from pathlib import Path
 
 from binsparse_tests.canonical import matrix_market_to_canonical
 from binsparse_tests.canonical import write_canonical_hdf5
+from binsparse_tests.commands import run_command
 from binsparse_tests.config import load_canonical_manifest
 from binsparse_tests.config import load_parser_manifest
 from binsparse_tests.downloads import fetch_matrix_market_spec
-from binsparse_tests.runner import run_command
 
 
 def parse_args() -> argparse.Namespace:

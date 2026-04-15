@@ -1,4 +1,11 @@
-# Implementation Plan
+# Legacy Roundtrip Plan
+
+This document records the original Matrix Market roundtrip scaffold.
+
+The current canonical dense-fixture design lives in:
+
+- [canonical_hdf5.md](/docker-mount/binsparse-tests/docs/canonical_hdf5.md)
+- [parser_contract.md](/docker-mount/binsparse-tests/docs/parser_contract.md)
 
 ## Goals
 

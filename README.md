@@ -15,30 +15,16 @@ The framework is intentionally small:
 - Parser-specific paths live in a local JSON config so the same tests can run
   against multiple implementations.
 
-## Current Scope
+## Docs
 
-The initial scaffold covers:
-
-- A structured manifest of known test matrices in
-  [config/matrices.json](/home/ubuntu/binsparse-tests/config/matrices.json).
-- A parser config contract in
-  [config/parsers.example.json](/home/ubuntu/binsparse-tests/config/parsers.example.json).
-- Roundtrip test orchestration for both entry points when both fixture formats
-  are available:
-  - Matrix Market -> Binsparse -> Matrix Market
-  - Binsparse -> Matrix Market -> Binsparse
-- Binsparse-only fixture discovery from a local directory tree, which collects
-  just the Binsparse -> Matrix Market -> Binsparse roundtrip.
-- Canonical dense HDF5 fixtures with:
-  - a compressed root dataset `matrix`
-  - a compressed root dataset `pattern`
-  - root attrs carrying the original Matrix Market field/symmetry and the
-    preferred Binsparse structure for reference generation
-- Phase 1 canonical tests:
-  - canonical HDF5 -> reference `.bsp.h5`
-- Phase 2 canonical tests:
-  - canonical HDF5 -> generated `.bsp.h5` in a requested format
-  - generated `.bsp.h5` -> reference `.bsp.h5`
+- [docs/canonical_hdf5.md](/docker-mount/binsparse-tests/docs/canonical_hdf5.md)
+  defines the canonical dense-HDF5 fixture contract.
+- [docs/parser_contract.md](/docker-mount/binsparse-tests/docs/parser_contract.md)
+  defines the parser binary contract.
+- [docs/corpus_maintenance.md](/docker-mount/binsparse-tests/docs/corpus_maintenance.md)
+  describes corpus selection and regeneration.
+- [docs/plan.md](/docker-mount/binsparse-tests/docs/plan.md)
+  records the original legacy roundtrip plan.
 
 ## Install
 
@@ -52,17 +38,10 @@ pip install -e '.[dev]'
 
 ## Configure A Parser
 
-Create `config/parsers.local.json` from the example file and point it at the
-legacy roundtrip binaries:
+Create `config/parsers.local.json` from the example file.
 
-- `mtx2bsp`
-- `bsp2mtx`
-- `check_equivalence`
-
-Canonical fixtures add one required binary and one optional binary:
-
-- `check_canonical_equivalence`
-- `canonical2bsp` (optional, used for Phase 2 generation tests and corpus builds)
+The parser contract is documented in
+[docs/parser_contract.md](/docker-mount/binsparse-tests/docs/parser_contract.md).
 
 Example:
 
@@ -101,13 +80,8 @@ fixture can be Binsparse-only:
 }
 ```
 
-Canonical fixtures live in `config/canonical_matrices.json`. Each entry names:
-
-- the SuiteSparse Matrix Market source
-- the local canonical dense HDF5 file
-- one or more committed reference `.bsp.h5` files, typically `CSR` and `CSC`
-
-The canonical HDF5 contract is documented in `docs/canonical_hdf5.md`.
+Canonical fixtures live in
+[config/canonical_matrices.json](/docker-mount/binsparse-tests/config/canonical_matrices.json).
 
 ## Run
 
@@ -157,7 +131,7 @@ local [Finch.jl](/docker-mount/Finch.jl) checkout:
 - [bsp2mtx](/docker-mount/Finch.jl/bin/bsp2mtx)
 - [check_equivalence](/docker-mount/Finch.jl/bin/check_equivalence)
 
-## Design Notes
+## Notes
 
 The canonical command directions are:
 
@@ -167,5 +141,5 @@ The canonical command directions are:
 That matters because the original problem statement swapped those two names in
 the prose description of the roundtrip sequence.
 
-See `docs/plan.md` for the original roundtrip plan and
-`docs/canonical_hdf5.md` for the canonical dense-fixture design.
+The README stays intentionally short. Design and maintenance details belong in
+the docs linked above.
